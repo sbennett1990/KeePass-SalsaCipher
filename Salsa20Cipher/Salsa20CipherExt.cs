@@ -29,7 +29,9 @@ using KeePass.Plugins;
 namespace Salsa20Cipher {
     public sealed class Salsa20CipherExt : Plugin {
         private IPluginHost pluginHost = null;
-        private const string updateUrl = "";
+        private const string updateUrl = 
+            "https://raw.githubusercontent.com/sbennett1990/KeePass-SalsaCipher/master/version-information.txt";
+
         private static Salsa20Engine salsa20CipherEngine = new Salsa20Engine();
 
         /// <summary>

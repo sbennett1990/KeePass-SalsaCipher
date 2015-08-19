@@ -6,7 +6,7 @@ KeePass should automatically recognize it as an available encryption algorithm.
 
 ### Requirements
 
-This plugin requires KeePass 2.09 or higher, and .NET framework 4.0 or higher. 
+This plugin requires KeePass 2.18 or higher, and .NET framework 4.0 or higher. 
 I have not yet tested it with lower .NET framework versions, but it's on my TODO 
 list.
 

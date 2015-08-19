@@ -29,12 +29,22 @@ using KeePass.Plugins;
 namespace Salsa20Cipher {
     public sealed class Salsa20CipherExt : Plugin {
         private IPluginHost pluginHost = null;
+        private const string updateUrl = "";
         private static Salsa20Engine salsa20CipherEngine = new Salsa20Engine();
+
+        /// <summary>
+        /// Access the URL of my version information file. (Read-Only) 
+        /// </summary>
+        public override string UpdateUrl {
+            get {
+                return updateUrl;
+            }
+        }
 
         /// <summary>
         /// Initialize the Salsa20 Cipher plugin. 
         /// </summary>
-        /// <param name="host">The host application (i.e. KeePass 2)</param>
+        /// <param name="host">The host application (i.e. KeePass 2.18)</param>
         /// <returns>True for successful initialization; false otherwise</returns>
         public override bool Initialize(IPluginHost host) {
             if (host == null) {

@@ -1,0 +1,2 @@
+REM This build file is very rigid and highly un-portable. I use is as a convenience on my own computer.
+.\KeePass.exe --plgx-create C:\Users\sbennet\Documents\Code\GitHub\KeePass-SalsaCipher\Salsa20Cipher --plgx-prereq-os:Windows --plgx-prereq-net:4

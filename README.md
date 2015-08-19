@@ -1,7 +1,7 @@
 # KeePass-SalsaCipher
 
 Enables KeePass to encrypt databases using the Salsa20 cipher. Just download 
-the Salsa20Cipher.plgx file and put it into the KeePass installation folder. 
+the `Salsa20Cipher.plgx` file and put it into the KeePass installation folder. 
 KeePass should automatically recognize it as an available encryption algorithm. 
 
 ### Requirements

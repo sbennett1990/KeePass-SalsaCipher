@@ -28,6 +28,9 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Salsa20Cipher {
+    /// <summary>
+    /// Salsa20 Stream Cipher
+    /// </summary>
     public sealed class Salsa20CryptoTransform : ICryptoTransform {
         /// <summary>
         /// The ChaCha20 state (aka "context")
@@ -54,6 +57,23 @@ namespace Salsa20Cipher {
         /// little-endian integers
         /// </param>
         public Salsa20CryptoTransform(byte[] key, byte[] iv) {
+            if (key == null) {
+                throw new ArgumentNullException("key");
+            }
+            if (iv == null) {
+                throw new ArgumentNullException("iv");
+            }
+            if (key.Length != 32) {
+                throw new ArgumentException(
+                    "Key length must be 32 bytes. Actual is " + key.Length.ToString()
+                );
+            }
+            if (iv.Length < 8) {
+                throw new ArgumentException(
+                    "Nonce should have 8 bytes. Actual is " + iv.Length.ToString()
+                );
+            }
+
             Initialize(key, iv);
             numRounds = 20;
         }
@@ -152,20 +172,20 @@ namespace Salsa20Cipher {
         /// <param name="outputOffset"></param>
         /// <returns>The number of bytes written</returns>
         public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset) {
-            // check the arguments
+            /* Check the parameters */
             if (inputBuffer == null) {
                 throw new ArgumentNullException("inputBuffer");
             }
             if (inputOffset < 0 || inputOffset >= inputBuffer.Length) {
                 throw new ArgumentOutOfRangeException("inputOffset");
             }
-            if (inputCount < 0 || inputOffset + inputCount > inputBuffer.Length) {
+            if (inputCount < 0 || (inputOffset + inputCount) > inputBuffer.Length) {
                 throw new ArgumentOutOfRangeException("inputCount");
             }
             if (outputBuffer == null) {
                 throw new ArgumentNullException("outputBuffer");
             }
-            if (outputOffset < 0 || outputOffset + inputCount > outputBuffer.Length) {
+            if (outputOffset < 0 || (outputOffset + inputCount) > outputBuffer.Length) {
                 throw new ArgumentOutOfRangeException("outputOffset");
             }
             if (state == null) {
@@ -176,15 +196,16 @@ namespace Salsa20Cipher {
             int bytesTransformed = 0;
 
             while (inputCount > 0) {
-                Hash(output, state);
-                state[8] = AddOne(state[8]);
+                Salsa20Core(output, state);
 
+                state[8] = AddOne(state[8]);
                 if (state[8] == 0) {
                     /* Stopping at 2^70 bytes per nonce is the user's responsibility */
                     state[9] = AddOne(state[9]);
                 }
 
                 int blockSize = Math.Min(64, inputCount);
+
                 for (int i = 0; i < blockSize; i++) {
                     outputBuffer[outputOffset + i] = (byte) (inputBuffer[inputOffset + i] ^ output[i]);
                 }
@@ -207,9 +228,7 @@ namespace Salsa20Cipher {
         /// <param name="inputCount"></param>
         /// <returns>The computed transform</returns>
         public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount) {
-            if (inputCount < 0) {
-                throw new ArgumentOutOfRangeException("inputCount");
-            }
+            // No parameter checking needed as that is handled in TransformBlock()
 
             byte[] output = new byte[inputCount];
             TransformBlock(inputBuffer, inputOffset, inputCount, output, 0);
@@ -228,7 +247,17 @@ namespace Salsa20Cipher {
             state = null;
         }
 
-        private void Hash(byte[] output, uint[] input) {
+        /// <summary>
+        /// The Salsa20 Core Function reads a 64-byte vector x and produces a 64-byte 
+        /// vector Salsa20(x). This is the basis of the Salsa20 Stream Cipher. 
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://cr.yp.to/salsa20.html">Salsa20 core</a> page 
+        /// for more detailed information about the Salsa20 core function. 
+        /// </remarks>
+        /// <param name="output"></param>
+        /// <param name="input"></param>
+        private void Salsa20Core(byte[] output, uint[] input) {
             uint[] tmp = (uint[]) input.Clone();
 
             for (int i = numRounds; i > 0; i -= 2) {

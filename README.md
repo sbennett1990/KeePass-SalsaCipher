@@ -11,6 +11,14 @@ http://keepass.info/download.html
 * KeePass 2.18 or higher
 * .NET framework v3.0 or higher
 
+### Build Info
+
+The released `Salsa20Cipher.plgx` is built using these options:
+
+`--plgx-prereq-kp:2.18 --plgx-prereq-os:Windows --plgx-prereq-net:3`
+
+See the [KeePass plugin development page](http://keepass.info/help/v2_dev/plg_index.html#plgx) for more information.
+
 ### Notes
 
 * This project was created with Visual Studio 2010

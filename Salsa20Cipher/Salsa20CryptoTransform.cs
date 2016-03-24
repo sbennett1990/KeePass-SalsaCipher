@@ -131,10 +131,10 @@ namespace Salsa20Cipher {
         private void Initialize(byte[] key, byte[] iv) {
             state = new uint[16];
 
-            state[1] = ToUInt32(key, 0);
-            state[2] = ToUInt32(key, 4);
-            state[3] = ToUInt32(key, 8);
-            state[4] = ToUInt32(key, 12);
+            state[1] = Twiddle.ToUInt32(key, 0);
+            state[2] = Twiddle.ToUInt32(key, 4);
+            state[3] = Twiddle.ToUInt32(key, 8);
+            state[4] = Twiddle.ToUInt32(key, 12);
 
             // These are the same constants defined in the reference implementation
             // see http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
@@ -144,18 +144,18 @@ namespace Salsa20Cipher {
             byte[] constants = (key.Length == 32) ? sigma : tau;
             int keyIndex = key.Length - 16;
 
-            state[11] = ToUInt32(key, keyIndex + 0);
-            state[12] = ToUInt32(key, keyIndex + 4);
-            state[13] = ToUInt32(key, keyIndex + 8);
-            state[14] = ToUInt32(key, keyIndex + 12);
+            state[11] = Twiddle.ToUInt32(key, keyIndex + 0);
+            state[12] = Twiddle.ToUInt32(key, keyIndex + 4);
+            state[13] = Twiddle.ToUInt32(key, keyIndex + 8);
+            state[14] = Twiddle.ToUInt32(key, keyIndex + 12);
 
-            state[0] = ToUInt32(constants, 0);
-            state[5] = ToUInt32(constants, 4);
-            state[10] = ToUInt32(constants, 8);
-            state[15] = ToUInt32(constants, 12);
+            state[0] = Twiddle.ToUInt32(constants, 0);
+            state[5] = Twiddle.ToUInt32(constants, 4);
+            state[10] = Twiddle.ToUInt32(constants, 8);
+            state[15] = Twiddle.ToUInt32(constants, 12);
 
-            state[6] = ToUInt32(iv, 0);
-            state[7] = ToUInt32(iv, 4);
+            state[6] = Twiddle.ToUInt32(iv, 0);
+            state[7] = Twiddle.ToUInt32(iv, 4);
             state[8] = 0;
             state[9] = 0;
         }
@@ -198,10 +198,10 @@ namespace Salsa20Cipher {
             while (inputCount > 0) {
                 Salsa20Core(output, state);
 
-                state[8] = AddOne(state[8]);
+                state[8] = Twiddle.AddOne(state[8]);
                 if (state[8] == 0) {
                     /* Stopping at 2^70 bytes per nonce is the user's responsibility */
-                    state[9] = AddOne(state[9]);
+                    state[9] = Twiddle.AddOne(state[9]);
                 }
 
                 int blockSize = Math.Min(64, inputCount);
@@ -261,45 +261,46 @@ namespace Salsa20Cipher {
             uint[] tmp = (uint[]) input.Clone();
 
             for (int i = numRounds; i > 0; i -= 2) {
-                tmp[4] ^= Rotate(Add(tmp[0], tmp[12]), 7);
-                tmp[8] ^= Rotate(Add(tmp[4], tmp[0]), 9);
-                tmp[12] ^= Rotate(Add(tmp[8], tmp[4]), 13);
-                tmp[0] ^= Rotate(Add(tmp[12], tmp[8]), 18);
-                tmp[9] ^= Rotate(Add(tmp[5], tmp[1]), 7);
-                tmp[13] ^= Rotate(Add(tmp[9], tmp[5]), 9);
-                tmp[1] ^= Rotate(Add(tmp[13], tmp[9]), 13);
-                tmp[5] ^= Rotate(Add(tmp[1], tmp[13]), 18);
-                tmp[14] ^= Rotate(Add(tmp[10], tmp[6]), 7);
-                tmp[2] ^= Rotate(Add(tmp[14], tmp[10]), 9);
-                tmp[6] ^= Rotate(Add(tmp[2], tmp[14]), 13);
-                tmp[10] ^= Rotate(Add(tmp[6], tmp[2]), 18);
-                tmp[3] ^= Rotate(Add(tmp[15], tmp[11]), 7);
-                tmp[7] ^= Rotate(Add(tmp[3], tmp[15]), 9);
-                tmp[11] ^= Rotate(Add(tmp[7], tmp[3]), 13);
-                tmp[15] ^= Rotate(Add(tmp[11], tmp[7]), 18);
-                tmp[1] ^= Rotate(Add(tmp[0], tmp[3]), 7);
-                tmp[2] ^= Rotate(Add(tmp[1], tmp[0]), 9);
-                tmp[3] ^= Rotate(Add(tmp[2], tmp[1]), 13);
-                tmp[0] ^= Rotate(Add(tmp[3], tmp[2]), 18);
-                tmp[6] ^= Rotate(Add(tmp[5], tmp[4]), 7);
-                tmp[7] ^= Rotate(Add(tmp[6], tmp[5]), 9);
-                tmp[4] ^= Rotate(Add(tmp[7], tmp[6]), 13);
-                tmp[5] ^= Rotate(Add(tmp[4], tmp[7]), 18);
-                tmp[11] ^= Rotate(Add(tmp[10], tmp[9]), 7);
-                tmp[8] ^= Rotate(Add(tmp[11], tmp[10]), 9);
-                tmp[9] ^= Rotate(Add(tmp[8], tmp[11]), 13);
-                tmp[10] ^= Rotate(Add(tmp[9], tmp[8]), 18);
-                tmp[12] ^= Rotate(Add(tmp[15], tmp[14]), 7);
-                tmp[13] ^= Rotate(Add(tmp[12], tmp[15]), 9);
-                tmp[14] ^= Rotate(Add(tmp[13], tmp[12]), 13);
-                tmp[15] ^= Rotate(Add(tmp[14], tmp[13]), 18);
+                tmp[4]   ^= Twiddle.Rotate(Twiddle.Add(tmp[0], tmp[12]), 7);
+                tmp[8]   ^= Twiddle.Rotate(Twiddle.Add(tmp[4], tmp[0]), 9);
+                tmp[12]  ^= Twiddle.Rotate(Twiddle.Add(tmp[8], tmp[4]), 13);
+                tmp[0]   ^= Twiddle.Rotate(Twiddle.Add(tmp[12], tmp[8]), 18);
+                tmp[9]   ^= Twiddle.Rotate(Twiddle.Add(tmp[5], tmp[1]), 7);
+                tmp[13]  ^= Twiddle.Rotate(Twiddle.Add(tmp[9], tmp[5]), 9);
+                tmp[1]   ^= Twiddle.Rotate(Twiddle.Add(tmp[13], tmp[9]), 13);
+                tmp[5]   ^= Twiddle.Rotate(Twiddle.Add(tmp[1], tmp[13]), 18);
+                tmp[14]  ^= Twiddle.Rotate(Twiddle.Add(tmp[10], tmp[6]), 7);
+                tmp[2]   ^= Twiddle.Rotate(Twiddle.Add(tmp[14], tmp[10]), 9);
+                tmp[6]   ^= Twiddle.Rotate(Twiddle.Add(tmp[2], tmp[14]), 13);
+                tmp[10]  ^= Twiddle.Rotate(Twiddle.Add(tmp[6], tmp[2]), 18);
+                tmp[3]   ^= Twiddle.Rotate(Twiddle.Add(tmp[15], tmp[11]), 7);
+                tmp[7]   ^= Twiddle.Rotate(Twiddle.Add(tmp[3], tmp[15]), 9);
+                tmp[11]  ^= Twiddle.Rotate(Twiddle.Add(tmp[7], tmp[3]), 13);
+                tmp[15]  ^= Twiddle.Rotate(Twiddle.Add(tmp[11], tmp[7]), 18);
+                tmp[1]   ^= Twiddle.Rotate(Twiddle.Add(tmp[0], tmp[3]), 7);
+                tmp[2]   ^= Twiddle.Rotate(Twiddle.Add(tmp[1], tmp[0]), 9);
+                tmp[3]   ^= Twiddle.Rotate(Twiddle.Add(tmp[2], tmp[1]), 13);
+                tmp[0]   ^= Twiddle.Rotate(Twiddle.Add(tmp[3], tmp[2]), 18);
+                tmp[6]   ^= Twiddle.Rotate(Twiddle.Add(tmp[5], tmp[4]), 7);
+                tmp[7]   ^= Twiddle.Rotate(Twiddle.Add(tmp[6], tmp[5]), 9);
+                tmp[4]   ^= Twiddle.Rotate(Twiddle.Add(tmp[7], tmp[6]), 13);
+                tmp[5]   ^= Twiddle.Rotate(Twiddle.Add(tmp[4], tmp[7]), 18);
+                tmp[11]  ^= Twiddle.Rotate(Twiddle.Add(tmp[10], tmp[9]), 7);
+                tmp[8]   ^= Twiddle.Rotate(Twiddle.Add(tmp[11], tmp[10]), 9);
+                tmp[9]   ^= Twiddle.Rotate(Twiddle.Add(tmp[8], tmp[11]), 13);
+                tmp[10]  ^= Twiddle.Rotate(Twiddle.Add(tmp[9], tmp[8]), 18);
+                tmp[12]  ^= Twiddle.Rotate(Twiddle.Add(tmp[15], tmp[14]), 7);
+                tmp[13]  ^= Twiddle.Rotate(Twiddle.Add(tmp[12], tmp[15]), 9);
+                tmp[14]  ^= Twiddle.Rotate(Twiddle.Add(tmp[13], tmp[12]), 13);
+                tmp[15]  ^= Twiddle.Rotate(Twiddle.Add(tmp[14], tmp[13]), 18);
             }
 
             for (int i = 0; i < 16; i++) {
-                ToBytes(Add(tmp[i], input[i]), output, 4 * i);
+                Twiddle.ToBytes(Twiddle.Add(tmp[i], input[i]), output, 4 * i);
             }
         }
 
+        /*
         /// <summary>
         /// n-bit left rotation operation (towards the high bits) for 32-bit 
         /// integers. 
@@ -365,5 +366,6 @@ namespace Salsa20Cipher {
                 output[outputOffset + 3] = (byte) (input >> 24);
             }
         }
+        */
     }
 }

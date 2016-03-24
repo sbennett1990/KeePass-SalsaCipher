@@ -33,7 +33,7 @@ namespace Salsa20Cipher {
     /// </summary>
     public sealed class Salsa20CryptoTransform : ICryptoTransform {
         /// <summary>
-        /// The ChaCha20 state (aka "context")
+        /// The Salsa20 state (aka "context")
         /// </summary>
         private uint[] state;
 

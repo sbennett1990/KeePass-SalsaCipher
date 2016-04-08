@@ -23,3 +23,5 @@ rd %srcfolder%\obj /S /Q
 
 :: Copy the plgx into the KeePass installation directory
 xcopy %plgx% %keepassDir% /Y
+
+pause

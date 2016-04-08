@@ -28,10 +28,10 @@ using KeePass.Plugins;
 
 namespace Salsa20Cipher {
     public sealed class Salsa20CipherExt : Plugin {
-        private IPluginHost pluginHost = null;
         private const string updateUrl = 
             "https://raw.githubusercontent.com/sbennett1990/KeePass-SalsaCipher/master/version-information.txt";
 
+        private IPluginHost pluginHost = null;
         private static Salsa20Engine salsa20CipherEngine = new Salsa20Engine();
 
         /// <summary>
@@ -46,20 +46,19 @@ namespace Salsa20Cipher {
         /// <summary>
         /// Initialize the Salsa20 Cipher plugin. 
         /// </summary>
-        /// <param name="host">The host application (i.e. KeePass 2.18)</param>
+        /// <param name="host">The host application (e.g. KeePass 2.18)</param>
         /// <returns>True for successful initialization; false otherwise</returns>
         public override bool Initialize(IPluginHost host) {
             if (host == null) {
                 return false;
             }
 
-            pluginHost = host;
-
             if (salsa20CipherEngine == null) {
                 return false;
             }
 
-            pluginHost.CipherPool.AddCipher(salsa20CipherEngine);
+            this.pluginHost = host;
+            this.pluginHost.CipherPool.AddCipher(salsa20CipherEngine);
 
             return true;
         }

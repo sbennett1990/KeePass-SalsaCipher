@@ -28,7 +28,7 @@ namespace Salsa20Cipher {
     /// <summary>
     /// Provides some bit twiddling functions needed for Salsa20.
     /// </summary>
-    public static class Twiddle {
+    public static class bits {
         /// <summary>
         /// Unchecked integer addition. The Salsa spec defines certain operations 
         /// to use 32-bit unsigned integer addition modulo 2^32. 

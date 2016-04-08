@@ -16,7 +16,7 @@ http://keepass.info/plugins.html
 
 The released `Salsa20Cipher.plgx` is built using these options:
 
-`--plgx-prereq-kp:2.18 --plgx-prereq-os:Windows --plgx-prereq-net:3`
+`--plgx-prereq-kp:2.18 --plgx-prereq-net:3`
 
 See the [KeePass plugin development page](http://keepass.info/help/v2_dev/plg_index.html#plgx) 
 for more information.

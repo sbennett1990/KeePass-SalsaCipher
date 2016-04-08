@@ -23,6 +23,6 @@ set plgx=%basefolder%\Salsa20Cipher.plgx
 rd %srcfolder%\bin /S /Q
 rd %srcfolder%\obj /S /Q
 
-.\KeePass.exe --plgx-create %srcfolder% --plgx-prereq-kp:2.18 --plgx-prereq-os:Windows --plgx-prereq-net:3
+.\KeePass.exe --plgx-create %srcfolder% --plgx-prereq-kp:2.18 --plgx-prereq-net:3
 
 xcopy %plgx% /Y
